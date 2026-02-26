@@ -54,4 +54,29 @@ async function registerController(req, res) {
     }
 }
 
-module.exports = { registerController };
+async function loginController(req,res){
+    const { username , email , password} = req.body;
+    const user = await userModel.findOne({
+        $or:[
+           { username : username},
+           {email : email}
+        ]
+    })
+    if(!user){
+        res.status(400).json({
+            message : "User not exist!"
+        })
+    }
+    const isValid = await bcrypt.compare(password,user.password);
+    if(!isValid){
+        res.status(401).json({message: "Invalid Credentials!"});
+    }
+
+    const token = jwt.sign({id: user._id, role : user.role}, process.env.JWT_SECRET);
+    res.cookie("token" , token);
+
+    res.status(200).json({message : "Logged in Successfully!",user});
+}
+
+
+module.exports = { registerController , loginController};
