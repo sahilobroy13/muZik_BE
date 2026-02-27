@@ -78,5 +78,25 @@ async function loginController(req,res){
     res.status(200).json({message : "Logged in Successfully!",user});
 }
 
+async function logOutController(req,res){
+    res.clearCookie("token");
 
-module.exports = { registerController , loginController};
+    res.status(200).json({message : "Logged Out Successfully!"});
+}
+
+async function dashboardController(req,res){
+    const token = req.cookies.token;
+    console.log(token)
+    if(!token){
+        res.status(401).json({message : "You are not logged In!"});
+    }
+    const decoded = await jwt.verify(token , process.env.JWT_SECRET);
+
+    const user = await userModel.findById(decoded.id);
+    if(!user){
+        res.status(404).json({message: "User not Found!"});
+    }
+    res.status(200).json({message : "Welcome to Dashboard!"});
+}
+
+module.exports = { registerController , loginController , logOutController , dashboardController};
