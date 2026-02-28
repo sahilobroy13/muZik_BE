@@ -39,4 +39,12 @@ async function addSongController(req, res) {
    }
 }
 
-module.exports = { addSongController };
+async function getSongController(req,res){
+    try {
+        const songs = await songModel.find();
+        res.status(200).json({message : "Song Fetched Successfully!",songs});   
+    } catch (error) {
+        res.status(500).json({message : "Something went wrong!"},error.message);
+    }
+}
+module.exports = { addSongController, getSongController};
