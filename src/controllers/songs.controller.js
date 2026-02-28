@@ -12,7 +12,7 @@ async function addSongController(req, res) {
     const coverBuffer = req.files.cover[0].buffer;
     const checkDuplicate = await songModel.findOne({
         $or :[
-            {title : data.title},
+            {title : (data.title).toLowerCase().trim()},
             {song_url : data.song_url}
         ]
     })
@@ -24,7 +24,7 @@ async function addSongController(req, res) {
     const imageResult = await uploadCoverfile(coverBuffer);
 
     const song = await songModel.create({
-        title : data.title,
+        title : (data.title).toLowerCase().trim(),
         artist_id : user._id,
         duration : data.duration,
         song_url : songResult.url,
@@ -47,4 +47,21 @@ async function getSongController(req,res){
         res.status(500).json({message : "Something went wrong!"},error.message);
     }
 }
-module.exports = { addSongController, getSongController};
+
+async function searchController(req,res){
+    try {
+        const q = (req.query.q).toLowerCase().trim();
+        
+        const song = await songModel.findOne({
+            title: q,
+        })
+        if(!song){
+            re.status(402).json({message : "No result found! "});
+        }
+        console.log(q);
+        res.status(200).json({message : "Fetched Song!", song})
+    } catch (error) {
+        res.status(400).json({message : "Something Went Wrong!"}, error.message);
+    }
+}
+module.exports = { addSongController, getSongController ,searchController};

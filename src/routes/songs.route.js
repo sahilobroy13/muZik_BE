@@ -15,4 +15,6 @@ router.post("/artist/create-music",authenticateUser,
 );
 router.get("/",authenticateUser, songController.getSongController);
 
+router.get('/search' ,authenticateUser, songController.searchController);
+
 module.exports = router;
