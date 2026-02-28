@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const songSchema =  new mongoose.Schema({
     title : {
         type : String,
-        required : true
+        required : true,
+        unique : true
     },
     artist_id : {
         type : mongoose.Schema.Types.ObjectId, 
@@ -20,6 +21,7 @@ const songSchema =  new mongoose.Schema({
     song_url : {
         type : String,
         required : true,
+        unique : true
     },
     cover : {
         type : String,
