@@ -85,18 +85,8 @@ async function logOutController(req,res){
 }
 
 async function dashboardController(req,res){
-    const token = req.cookies.token;
-    console.log(token)
-    if(!token){
-        res.status(401).json({message : "You are not logged In!"});
-    }
-    const decoded = await jwt.verify(token , process.env.JWT_SECRET);
-
-    const user = await userModel.findById(decoded.id);
-    if(!user){
-        res.status(404).json({message: "User not Found!"});
-    }
-    res.status(200).json({message : "Welcome to Dashboard!"});
+    const user = req.user;
+    res.status(200).json({message : "Welcome to Dashboard!", user});
 }
 
 module.exports = { registerController , loginController , logOutController , dashboardController};
