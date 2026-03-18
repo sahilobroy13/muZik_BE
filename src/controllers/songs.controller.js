@@ -50,18 +50,22 @@ async function getSongController(req,res){
 
 async function searchController(req,res){
     try {
-        const q = (req.query.q).toLowerCase().trim();
+        const q = req.query.q;
+        if(!q){
+            return res.status(200).json({message : "You have to give value to search"})
+        }
         
-        const song = await songModel.findOne({
-            title: q,
-        })
-        if(!song){
-            re.status(402).json({message : "No result found! "});
+        const suggestions = await songModel.find({
+            title : {$regex : q, $options : 'i'},
+        }).limit(5).select("title").select("song_url").select("artist_id").select("cover");
+        if(suggestions.length === 0){
+            return res.status(404).json({message : "No result found! "});
         }
         console.log(q);
-        res.status(200).json({message : "Fetched Song!", song})
+        res.status(200).json({message : "Fetched Song!", suggestions})
     } catch (error) {
-        res.status(400).json({message : "Something Went Wrong!"}, error.message);
+        console.log(error);
+        res.status(400).json(error.message);
     }
 }
 module.exports = { addSongController, getSongController ,searchController};

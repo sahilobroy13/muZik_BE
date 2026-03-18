@@ -11,6 +11,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", require("./routes/auth.route"));
 app.use("/api/songs", require("./routes/songs.route"));
+app.use("/api/playlist" , require("./routes/playlist.route"));
 
 
 module.exports = app;
