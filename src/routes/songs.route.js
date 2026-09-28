@@ -16,5 +16,6 @@ router.post("/artist/create-music",authenticateUser,
 router.get("/",authenticateUser, songController.getSongController);
 
 router.get('/search' ,authenticateUser, songController.searchController);
+console.log("song route is working fine");
 
 module.exports = router;
