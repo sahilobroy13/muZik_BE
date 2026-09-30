@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 const userModel = require("../models/user.model");
 const bcrypt = require("bcrypt");
+const emailService = require("../services/emailServices");
+const blacklistToken = require("../models/blacklistToken.model");
 
 const cookieOptions = {
     httpOnly: true,
@@ -40,6 +42,7 @@ async function registerController(req, res) {
         );
 
         res.cookie("token", token, cookieOptions);
+        await emailService.sendRegistrationEmail(user.email, user.username);
 
         return res.status(201).json({ message: "User Registered Successfully!", user });
 
@@ -87,6 +90,12 @@ async function loginController(req, res) {
 }
 
 async function logOutController(req, res) {
+    const { token } = req.cookies;
+
+    if (token) {
+        await blacklistToken.create({ token });
+    }
+
     res.clearCookie("token", cookieOptions);
     return res.status(200).json({ message: "Logged Out Successfully!" });
 }
