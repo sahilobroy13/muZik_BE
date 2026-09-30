@@ -92,6 +92,36 @@ async function addSongController(req,res){
         return res.status(500).json(error.message);
     }
 }
+async function removeSongFromPLaylistController(req,res){
+    try{
+        const songId = req.params.songId;
+        const playlistId = req.params.playlistId;
+        if(!songId || !playlistId) {
+            return res.status(400).json({message : "SongId or PlaylistId is missing!"});
+        }
+        const user = req.user;
+        const playlist = await playlistModel.findOne({ _id : playlistId});
+        if(!playlist){
+            return res.status(404).json({message : "Playlist not found!"});
+        }
+        if(!playlist.owner.equals(user._id)){
+            return res.status(401).json({message : "Unauthorized Access!"});
+        }
+        const songInPlaylist = await playlistSongModel.findOne({ playlistId, songId });
+        if(!songInPlaylist){
+            return res.status(404).json({message : "Song not found in the playlist!"});
+        }
+        await playlistSongModel.deleteOne({_id : songInPlaylist._id});
+        await playlistModel.findByIdAndUpdate(
+            playlistId,
+            { $inc: { totalSongs: -1 } }
+        );
+        return res.status(200).json({message : "Song removed from playlist!"});
+
+    }catch(error){
+        return res.status(500).json(error.message);
+    }
+}
 
 async function getSinglePlaylistController(req, res) {
   try {

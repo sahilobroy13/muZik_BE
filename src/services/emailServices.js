@@ -11,11 +11,13 @@ const transporter = nodemailer.createTransport({
 
 })
 
-try{
-    await transporter.verify();
-    console.log("Email service is ready to send messages");
-}catch(error){
-    console.error("Error with email service: ", error);
+async function verifyEmailService() {
+    try {
+        await transporter.verify();
+        console.log("Email service is ready to send messages");
+    } catch (error) {
+        console.error("Error with email service:", error);
+    }
 }
 
 const sendEmail = async(to ,subject, text, html)=>{
@@ -81,4 +83,4 @@ async function sendRegistrationEmail(userEmail, name) {
   await sendEmail(userEmail, subject, text, html);
 }
 
-module.exports = { sendEmail, sendRegistrationEmail };
+module.exports = { sendEmail, sendRegistrationEmail , verifyEmailService };
